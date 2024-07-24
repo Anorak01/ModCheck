@@ -7,10 +7,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.PacketByteBuf;
-import top.anorak01.modcheck.MakeChecksum;
 import top.anorak01.modcheck.Modcheck;
 
-import java.io.File;
 import java.util.Map;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;

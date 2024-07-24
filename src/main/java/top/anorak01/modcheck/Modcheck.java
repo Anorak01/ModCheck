@@ -1,20 +1,15 @@
 package top.anorak01.modcheck;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.ModContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.nio.file.Files;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
-import java.security.MessageDigest;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -22,7 +17,7 @@ public class Modcheck implements ModInitializer {
     public static final String MOD_ID = "ModCheck";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static Map<String, String> modlist_w_checksums = new HashMap<String, String>();
+    public static Map<String, String> modlist_w_checksums = new HashMap<>();
 
     public static final Map<UUID, Boolean> modCheckResponses = new HashMap<>();
     public static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
