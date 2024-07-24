@@ -5,7 +5,7 @@ The server-side checks for modlist.txt file in the server root (next to files li
 - If it finds the file, it will compare the client mods against that
 - If no file is present, the mods in server-side mods folder will be used
 
-The modlist.txt file is generated using a small utility.
+The modlist.txt file is generated using a small utility. [ModCheckUtil](https://github.com/Anorak01/ModCheckUtil)
 
 The client-side sends its modlist with checksums when it joins the server.
 
