@@ -27,20 +27,12 @@ public class NetworkHandler {
 
 
     public static void register() {
-        Modcheck.LOGGER.info("Registering packet");
-        ServerPlayNetworking.registerGlobalReceiver(CHECKSUMS_PACKET_ID, new ServerPlayNetworking.PlayChannelHandler() {
-            @Override
-            public void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-                int count = buf.readInt();
-                Map<String, String> checksums = new HashMap<>();
-                for (int i = 0; i < count; i++) {
-                    String fileName = buf.readString(32767);
-                    String checksum = buf.readString(32767);
-                    checksums.put(fileName, checksum);
-                }
-                validateChecksums(player, checksums);
-            }
-        });
+        Modcheck.LOGGER.info("Registering network handlers");
+        registerChecksumPacket();
+        registerHandshakeWorkflow();
+    }
+
+    private static void registerHandshakeWorkflow() {
         ServerPlayNetworking.registerGlobalReceiver(MOD_CHECK_RESPONSE, new ServerPlayNetworking.PlayChannelHandler() {
             @Override
             public void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -62,11 +54,28 @@ public class NetworkHandler {
             // Schedule a task to check if the client responded after 5 seconds
             scheduler.schedule(() -> {
                 if (!modCheckResponses.get(player.getUuid())) {
-                        player.networkHandler.disconnect(Text.of("You don't have ModCheck mod installed!"));
+                    player.networkHandler.disconnect(Text.of("You don't have ModCheck mod installed!"));
                 }
             }, 5, TimeUnit.SECONDS);
         });
     }
+
+    private static void registerChecksumPacket() {
+        ServerPlayNetworking.registerGlobalReceiver(CHECKSUMS_PACKET_ID, new ServerPlayNetworking.PlayChannelHandler() {
+            @Override
+            public void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+                int count = buf.readInt();
+                Map<String, String> checksums = new HashMap<>();
+                for (int i = 0; i < count; i++) {
+                    String fileName = buf.readString(32767);
+                    String checksum = buf.readString(32767);
+                    checksums.put(fileName, checksum);
+                }
+                validateChecksums(player, checksums);
+            }
+        });
+    }
+
     private static void validateChecksums(ServerPlayerEntity player, Map<String, String> checksums) {
         // Your validation logic here
         // Disconnect player if validation fails
@@ -77,7 +86,8 @@ public class NetworkHandler {
             player.networkHandler.disconnect(reason);
         }
     }
-    public static void sendModCheckRequest(ServerPlayerEntity player) {
+
+    private static void sendModCheckRequest(ServerPlayerEntity player) {
         PacketByteBuf buf = PacketByteBufs.create();
         ServerPlayNetworking.send(player, MOD_CHECK_REQUEST, buf);
     }
