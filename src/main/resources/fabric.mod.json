@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "modcheck",
+  "version": "${version}",
+  "name": "ModCheck",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/modcheck/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "top.anorak01.modcheck.client.ModcheckClient"
+    ],
+    "main": [
+      "top.anorak01.modcheck.Modcheck"
+    ]
+  },
+  "mixins": [
+    "modcheck.mixins.json",
+    {
+      "config": "modcheck.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
