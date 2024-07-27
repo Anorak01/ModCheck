@@ -78,6 +78,4 @@ public class Modcheck implements ModInitializer {
                 .stream()
                 .collect(Collectors.toMap(key -> key, props::getProperty));
     }
-
-
 }
