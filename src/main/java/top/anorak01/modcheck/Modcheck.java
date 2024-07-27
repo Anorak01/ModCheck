@@ -35,8 +35,10 @@ public class Modcheck implements ModInitializer {
     public static void regenerateModlist() { // obsoleted by external modlist
         File modsfolder = new File(FabricLoader.getInstance().getGameDir().toFile(), "mods");
         for (File mod : Objects.requireNonNull(modsfolder.listFiles())) {
-            String checksum = MakeChecksum.makeChecksum(mod);
-            modlist_w_checksums.put(mod.getName(), checksum);
+            if (mod.isFile() && mod.canRead()) {
+                String checksum = MakeChecksum.makeChecksum(mod);
+                modlist_w_checksums.put(mod.getName(), checksum);
+            }
         }
     }
 
