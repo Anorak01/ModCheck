@@ -1,6 +1,8 @@
 package top.anorak01.modcheck;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.fabricmc.loader.api.FabricLoader;
@@ -22,14 +24,29 @@ public class Modcheck implements ModInitializer {
     public static final Map<UUID, Boolean> modCheckResponses = new HashMap<>();
     public static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+    public static MinecraftServer server;
+
+    public static boolean isSingleplayer;
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Start Check");
-        NetworkHandler.register();
+        ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStarting);
+        LOGGER.info("ModCheck starting");
 
         readModlist();
         LOGGER.info(modlist_w_checksums.toString());
+        LOGGER.info("ModCheck started");
+    }
+
+    private void onServerStarting(MinecraftServer mcserver) {
+        server = mcserver;
+        isSingleplayer = server.isSingleplayer();
+        if (isSingleplayer) {
+            // don't register events
+            LOGGER.info("Detected SinglePlayer environment, ModCheck disabled");
+        } else {
+            NetworkHandler.register();
+        }
     }
 
     public static void regenerateModlist() { // obsoleted by external modlist
