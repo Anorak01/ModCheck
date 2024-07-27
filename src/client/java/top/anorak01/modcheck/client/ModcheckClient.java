@@ -58,7 +58,7 @@ public class ModcheckClient implements ClientModInitializer {
         ));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player != null && !modCheckSent) {
-                Modcheck.LOGGER.info("Sending info");
+                Modcheck.LOGGER.info("Sending handshake");
                 boolean hasMod = FabricLoader.getInstance().isModLoaded("modcheck");
 
                 PacketByteBuf responseBuf = PacketByteBufs.create();
