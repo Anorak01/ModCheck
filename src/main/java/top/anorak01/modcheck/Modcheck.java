@@ -1,8 +1,10 @@
 package top.anorak01.modcheck;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.fabricmc.loader.api.FabricLoader;
@@ -14,6 +16,9 @@ import java.util.stream.Collectors;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
+// Stuff for commands
+import static net.minecraft.server.command.CommandManager.*;
 
 public class Modcheck implements ModInitializer {
     public static final String MOD_ID = "ModCheck";
@@ -28,6 +33,8 @@ public class Modcheck implements ModInitializer {
 
     public static boolean isSingleplayer;
 
+    public static boolean isModCheckEnabled = true;
+
     @Override
     public void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStarting);
@@ -35,6 +42,7 @@ public class Modcheck implements ModInitializer {
 
         readModlist();
         LOGGER.info(modlist_w_checksums.toString());
+        registerCommands();
         LOGGER.info("ModCheck started");
     }
 
@@ -77,5 +85,25 @@ public class Modcheck implements ModInitializer {
         modlist_w_checksums = props.stringPropertyNames()
                 .stream()
                 .collect(Collectors.toMap(key -> key, props::getProperty));
+    }
+
+    private static void registerCommands() {
+        CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
+            dispatcher.register(literal("modcheck_off")
+                    .requires(source -> source.hasPermissionLevel(4))
+                    .executes(context -> {
+                        if (isModCheckEnabled) {
+                            isModCheckEnabled = false;
+                          context.getSource().sendFeedback(()->
+                              Text.literal("ModCheck temporarily disabled!"), false);
+                        } else {
+                            context.getSource().sendFeedback(()->
+                            Text.literal("ModCheck is already disabled!"), false);
+                        }
+                      return 1;
+                    })
+            );
+
+        }));
     }
 }
