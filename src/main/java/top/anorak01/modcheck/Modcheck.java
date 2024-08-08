@@ -117,8 +117,6 @@ public class Modcheck implements ModInitializer {
                         } else if (context.getSource().isExecutedByPlayer()) {
                             uploading_player = context.getSource().getPlayer().getUuid();
 
-                            //context.getSource().getPlayer().send();
-                                    //ServerPlayNetworking.send()
                             NetworkHandler.sendModlistRequest(context.getSource().getPlayer());
                             context.getSource().sendFeedback(()->
                                     Text.literal("Uploading new modlist"), false);
