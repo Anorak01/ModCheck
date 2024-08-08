@@ -41,8 +41,6 @@ public class Modcheck implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStarting);
         LOGGER.info("ModCheck starting");
 
-        readModlist();
-        LOGGER.info(modlist_w_checksums.toString());
         registerCommands();
         LOGGER.info("ModCheck started");
     }
@@ -55,10 +53,13 @@ public class Modcheck implements ModInitializer {
             LOGGER.info("Detected SinglePlayer environment, ModCheck disabled");
         } else {
             NetworkHandler.register();
+            readModlist();
+            LOGGER.info(modlist_w_checksums.toString());
+
         }
     }
 
-    public static void regenerateModlist() { // obsoleted by external modlist
+    public static void regenerateModlist() {
         File modsfolder = new File(FabricLoader.getInstance().getGameDir().toFile(), "mods");
         for (File mod : Objects.requireNonNull(modsfolder.listFiles())) {
             if (mod.isFile() && mod.canRead()) {
@@ -89,7 +90,7 @@ public class Modcheck implements ModInitializer {
     }
 
     private static void registerCommands() {
-        CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             // Command to turn mod checking off
             dispatcher.register(literal("modcheck_off")
                     .requires(source -> source.hasPermissionLevel(4))
@@ -131,6 +132,6 @@ public class Modcheck implements ModInitializer {
 
             );
 
-        }));
+        });
     }
 }
