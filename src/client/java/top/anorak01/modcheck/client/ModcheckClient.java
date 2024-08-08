@@ -20,6 +20,8 @@ public class ModcheckClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         registerModcheckResponder();
+        Modcheck.LOGGER.info("Generating modlist");
+        Modcheck.regenerateModlist();
     }
 
     private static void registerModcheckResponder() {
