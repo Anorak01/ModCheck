@@ -37,5 +37,17 @@ public class ModcheckClient implements ClientModInitializer {
 
             return CompletableFuture.completedFuture(responseBuf);
         })));
+        ClientPlayNetworking.registerGlobalReceiver(NetworkHandler.MOD_CHECK_MODLIST_UPLOAD_CHANNEL, ((client, handler, buf, responseSender) -> {
+            PacketByteBuf responseBuf = PacketByteBufs.create();
+
+            Map<String, String> checksums = Modcheck.modlist_w_checksums;
+            responseBuf.writeInt(checksums.size());
+            checksums.forEach((fileName, checksum) -> {
+                responseBuf.writeString(fileName);
+                responseBuf.writeString(checksum);
+            });
+
+            responseSender.sendPacket(NetworkHandler.MOD_CHECK_MODLIST_UPLOAD_CHANNEL, responseBuf);
+        }));
     }
 }
