@@ -34,6 +34,7 @@ public class Modcheck implements ModInitializer {
     public static boolean isSingleplayer;
 
     public static boolean isModCheckEnabled = true;
+    public static UUID uploading_player;
 
     @Override
     public void onInitialize() {
@@ -89,6 +90,7 @@ public class Modcheck implements ModInitializer {
 
     private static void registerCommands() {
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
+            // Command to turn mod checking off
             dispatcher.register(literal("modcheck_off")
                     .requires(source -> source.hasPermissionLevel(4))
                     .executes(context -> {
@@ -102,6 +104,31 @@ public class Modcheck implements ModInitializer {
                         }
                       return 1;
                     })
+            );
+
+            // Command to upload the mod and update it on the server
+            dispatcher.register(literal("modcheck_upload")
+                    .requires(source -> source.hasPermissionLevel(4))
+                    .executes(context -> {
+                        if (isModCheckEnabled) {
+                            context.getSource().sendFeedback(()->
+                                    Text.literal("Mod checking has to be disabled first!"), false);
+                        } else if (context.getSource().isExecutedByPlayer()) {
+                            uploading_player = context.getSource().getPlayer().getUuid();
+
+                            //context.getSource().getPlayer().send();
+                                    //ServerPlayNetworking.send()
+                            NetworkHandler.sendModlistRequest(context.getSource().getPlayer());
+                            context.getSource().sendFeedback(()->
+                                    Text.literal("Uploading new modlist"), false);
+                        } else {
+                            context.getSource().sendFeedback(()->
+                                    Text.literal("This command can only be executed by a player"), false);
+                        }
+                        return 1;
+                    })
+
+
             );
 
         }));
